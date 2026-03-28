@@ -74,11 +74,21 @@ export function HUD({
       </div>
 
       <div className="touch-controls" aria-label="Mobile lane controls">
-        <button className="touch-controls__button" onClick={onMoveLeft} type="button">
-          Left
+        <button
+          className="touch-controls__button touch-controls__button--left"
+          onPointerDown={onMoveLeft}
+          type="button"
+        >
+          <span>Left</span>
+          <small>Tap left side</small>
         </button>
-        <button className="touch-controls__button" onClick={onMoveRight} type="button">
-          Right
+        <button
+          className="touch-controls__button touch-controls__button--right"
+          onPointerDown={onMoveRight}
+          type="button"
+        >
+          <span>Right</span>
+          <small>Tap right side</small>
         </button>
       </div>
     </div>

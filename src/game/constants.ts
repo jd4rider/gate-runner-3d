@@ -5,7 +5,7 @@ import type {
   LevelDefinition,
 } from './types'
 
-export const LANE_POSITIONS = [-3.4, 0, 3.4] as const
+export const LANE_POSITIONS = [3.4, 0, -3.4] as const
 export const TRACK_WIDTH = 12
 export const STARTING_UNITS = 1
 export const BEST_SCORE_STORAGE_KEY = 'gate-shift-runner-best-score'
