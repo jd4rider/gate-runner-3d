@@ -27,7 +27,7 @@ export function HUD({
 
   return (
     <div className="hud">
-      <div className="hud__panel">
+      <div className="hud__panel hud__panel--desktop">
         <div className="hud__top">
           <div>
             <p className="eyebrow">Now Running</p>
@@ -70,6 +70,39 @@ export function HUD({
             <span style={{ width: `${progressPercent}%` }} />
           </div>
           <p className="hud__hint">Left / Right or A / D. R restarts. Esc returns to menu.</p>
+        </div>
+      </div>
+
+      <div className="hud__panel hud__panel--mobile">
+        <div className="mobile-hud__top">
+          <div className="mobile-hud__title">
+            <strong>{levelName}</strong>
+            <span>{difficulty}</span>
+          </div>
+
+          <div className="mobile-hud__actions">
+            <button className="mobile-hud__action" onClick={onRestart} type="button">
+              Restart
+            </button>
+            <button className="mobile-hud__action" onClick={onReturnToMenu} type="button">
+              Menu
+            </button>
+          </div>
+        </div>
+
+        <div className="mobile-hud__stats">
+          <div className="mobile-hud__chip">
+            <span>Units</span>
+            <strong>{units}</strong>
+          </div>
+          <div className="mobile-hud__chip">
+            <span>Score</span>
+            <strong>{score}</strong>
+          </div>
+          <div className="mobile-hud__chip">
+            <span>Progress</span>
+            <strong>{progressPercent}%</strong>
+          </div>
         </div>
       </div>
 
