@@ -1,0 +1,456 @@
+:root {
+  color: #fff6ea;
+  color-scheme: light;
+  font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+  font-synthesis: none;
+  line-height: 1.4;
+  text-rendering: optimizeLegibility;
+  --bg-deep: #102236;
+  --edge: rgba(255, 245, 222, 0.14);
+  --accent: #72f1ff;
+  --accent-warm: #ffca70;
+  --text-muted: rgba(255, 246, 234, 0.72);
+  background:
+    radial-gradient(circle at top, rgba(114, 241, 255, 0.2), transparent 28%),
+    linear-gradient(180deg, #f6d8a9 0%, #f6b066 35%, #1d3046 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+button {
+  border: 0;
+  color: inherit;
+  font: inherit;
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(114, 241, 255, 0.2), transparent 38%),
+    linear-gradient(180deg, rgba(255, 225, 171, 0.55), rgba(245, 152, 87, 0.35) 38%, rgba(12, 24, 39, 0.88));
+  height: 100vh;
+  isolation: isolate;
+  position: relative;
+  width: 100%;
+}
+
+.app-shell::before {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.12), transparent 18%),
+    radial-gradient(circle at 78% 14%, rgba(255, 202, 112, 0.22), transparent 20%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.app-shell__scene {
+  inset: 0;
+  position: absolute;
+}
+
+canvas {
+  display: block !important;
+  height: 100% !important;
+  touch-action: none;
+  width: 100% !important;
+}
+
+.overlay,
+.hud {
+  inset: 0;
+  position: absolute;
+  z-index: 2;
+}
+
+.overlay {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.overlay--start {
+  background: linear-gradient(180deg, rgba(10, 18, 30, 0.32), rgba(10, 18, 30, 0.72));
+}
+
+.overlay--modal {
+  background: rgba(4, 11, 20, 0.55);
+  backdrop-filter: blur(10px);
+}
+
+.start-panel,
+.modal-card,
+.hud__panel {
+  animation: lift-in 420ms ease;
+  backdrop-filter: blur(16px);
+  background: linear-gradient(180deg, rgba(18, 34, 54, 0.88), rgba(9, 18, 30, 0.88));
+  border: 1px solid var(--edge);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+}
+
+.start-panel,
+.modal-card {
+  border-radius: 28px;
+  max-width: 1100px;
+  padding: 1.5rem;
+  width: min(100%, 1100px);
+}
+
+.modal-card {
+  max-width: 560px;
+}
+
+.eyebrow {
+  color: var(--accent-warm);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+strong {
+  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(2.3rem, 4vw, 4rem);
+  letter-spacing: 0.02em;
+  line-height: 0.95;
+}
+
+h2 {
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  line-height: 1;
+}
+
+.lead {
+  color: var(--text-muted);
+  margin-top: 0.85rem;
+  max-width: 54rem;
+}
+
+.hero-row {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.4rem;
+}
+
+.score-chip {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 0.65rem;
+  padding: 0.8rem 1rem;
+}
+
+.score-chip span,
+.level-card p,
+.tip-card p,
+.progress-card__row span,
+.stat-card span {
+  color: var(--text-muted);
+}
+
+.button {
+  background: linear-gradient(180deg, #7bf1ff, #2ecf9b);
+  border-radius: 999px;
+  box-shadow: 0 10px 24px rgba(44, 211, 141, 0.22);
+  color: #102236;
+  cursor: pointer;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 0.9rem 1.25rem;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease,
+    background 140ms ease;
+}
+
+.button:hover {
+  box-shadow: 0 16px 28px rgba(44, 211, 141, 0.28);
+  transform: translateY(-1px);
+}
+
+.button--secondary {
+  background: linear-gradient(180deg, #ffd88a, #ffb15b);
+}
+
+.button--ghost {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+  color: #fff6ea;
+}
+
+.level-grid,
+.tips-grid,
+.hud__stats,
+.modal-stats {
+  display: grid;
+  gap: 1rem;
+}
+
+.level-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 1.5rem;
+}
+
+.level-card,
+.tip-card,
+.stat-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+}
+
+.level-card {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  min-height: 220px;
+  padding: 1.1rem;
+  text-align: left;
+  transition:
+    border-color 140ms ease,
+    transform 140ms ease,
+    background 140ms ease;
+}
+
+.level-card:hover {
+  transform: translateY(-2px);
+}
+
+.level-card--selected {
+  background: linear-gradient(180deg, rgba(114, 241, 255, 0.12), rgba(255, 202, 112, 0.08));
+  border-color: rgba(114, 241, 255, 0.42);
+}
+
+.level-card__difficulty {
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.level-card__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: auto;
+}
+
+.level-card__stats span {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.7rem;
+}
+
+.tips-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 1.3rem;
+}
+
+.tip-card,
+.stat-card {
+  padding: 1rem;
+}
+
+.hud {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+  pointer-events: none;
+}
+
+.hud__panel {
+  border-radius: 24px;
+  margin-right: auto;
+  max-width: min(100%, 560px);
+  padding: 1rem;
+  pointer-events: auto;
+  width: 100%;
+}
+
+.hud__top,
+.progress-card__row,
+.hud__actions,
+.modal-actions {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.hud__top h2 span {
+  color: var(--accent-warm);
+  font-size: 0.95rem;
+  margin-left: 0.4rem;
+  text-transform: uppercase;
+}
+
+.hud__actions {
+  flex-wrap: wrap;
+}
+
+.hud__stats,
+.modal-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 1rem;
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 1.3rem;
+  margin-top: 0.2rem;
+}
+
+.progress-card {
+  margin-top: 1rem;
+}
+
+.progress-bar {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  height: 0.7rem;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.progress-bar span {
+  background: linear-gradient(90deg, #72f1ff, #2cd38d);
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+}
+
+.hud__hint {
+  margin-top: 0.65rem;
+}
+
+.touch-controls {
+  display: none;
+  gap: 0.75rem;
+  margin-top: auto;
+  pointer-events: auto;
+}
+
+.touch-controls__button {
+  background: rgba(7, 16, 28, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  flex: 1;
+  min-height: 4.5rem;
+  text-transform: uppercase;
+}
+
+.modal-actions {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+.world-label {
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: #fff6ea;
+  font-size: 0.38rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 0.3rem 0.48rem;
+  pointer-events: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.world-label--positive {
+  background: rgba(18, 57, 47, 0.92);
+  color: #aefad3;
+}
+
+.world-label--negative,
+.world-label--hazard {
+  background: rgba(82, 39, 34, 0.92);
+  color: #ffd0c7;
+}
+
+.world-label--finish {
+  background: rgba(16, 34, 54, 0.92);
+  color: #fff6de;
+}
+
+.world-label--muted {
+  opacity: 0.45;
+}
+
+@keyframes lift-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 900px) {
+  .level-grid,
+  .tips-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-row,
+  .hud__top,
+  .hud__actions,
+  .progress-card__row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .hud__stats,
+  .modal-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .touch-controls {
+    display: flex;
+  }
+
+  .hud__hint {
+    display: none;
+  }
+}
