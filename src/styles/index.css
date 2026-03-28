@@ -443,8 +443,9 @@ h2 {
   justify-content: flex-end;
   min-height: clamp(5.5rem, 18vh, 8rem);
   padding: 1rem 1rem 1.15rem;
-  width: 100%;
   touch-action: manipulation;
+  touch-action: none;
+  width: 100%;
 }
 
 .touch-controls__track {
