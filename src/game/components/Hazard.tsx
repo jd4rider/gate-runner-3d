@@ -40,7 +40,14 @@ export function Hazard({ hazard, isResolved }: HazardProps) {
         </mesh>
       ))}
 
-      <Html position={[0, 1.9, 0]} sprite transform distanceFactor={9}>
+      <Html
+        distanceFactor={9}
+        pointerEvents="none"
+        position={[0, 1.9, 0]}
+        sprite
+        transform
+        zIndexRange={[8, 0]}
+      >
         <div className={`world-label world-label--hazard ${isResolved ? 'world-label--muted' : ''}`}>
           -{hazard.damage}
         </div>

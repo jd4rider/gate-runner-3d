@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useCallback } from 'react'
 import { GameOverModal } from './components/GameOverModal'
 import { HUD } from './components/HUD'
 import { StartScreen } from './components/StartScreen'
@@ -21,6 +22,18 @@ function App() {
   } = useRunnerGame()
 
   const touchStartX = useRef<number | null>(null)
+  const handleExit = useCallback(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    if (window.history.length > 1) {
+      window.history.back()
+      return
+    }
+
+    window.location.assign('https://github.com/jd4rider/gate-runner-3d')
+  }, [])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -115,6 +128,7 @@ function App() {
           bestScore={game.bestScore}
           levels={levels}
           selectedLevelIndex={game.levelIndex}
+          onExit={handleExit}
           onSelectLevel={selectLevel}
           onStart={startSelectedLevel}
         />

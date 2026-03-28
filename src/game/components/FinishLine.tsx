@@ -36,7 +36,14 @@ export function FinishLine({ z }: FinishLineProps) {
         <meshStandardMaterial color="#fff3dc" />
       </mesh>
 
-      <Html position={[0, 5.2, 0]} sprite transform distanceFactor={12}>
+      <Html
+        distanceFactor={12}
+        pointerEvents="none"
+        position={[0, 5.2, 0]}
+        sprite
+        transform
+        zIndexRange={[8, 0]}
+      >
         <div className="world-label world-label--finish">finish</div>
       </Html>
     </group>

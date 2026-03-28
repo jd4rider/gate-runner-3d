@@ -36,7 +36,14 @@ export function Gate({ gate, isResolved }: GateProps) {
         <meshStandardMaterial color={panelColor} opacity={Math.max(opacity, 0.18)} transparent />
       </mesh>
 
-      <Html position={[0, 2.18, 0.34]} sprite transform distanceFactor={9}>
+      <Html
+        distanceFactor={9}
+        pointerEvents="none"
+        position={[0, 2.18, 0.34]}
+        sprite
+        transform
+        zIndexRange={[8, 0]}
+      >
         <div
           className={[
             'world-label',
