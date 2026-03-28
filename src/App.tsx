@@ -1,27 +1,27 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useCallback } from 'react'
 import { GameOverModal } from './components/GameOverModal'
 import { HUD } from './components/HUD'
 import { StartScreen } from './components/StartScreen'
-import { SWIPE_THRESHOLD } from './game/constants'
+import { LANE_POSITIONS } from './game/constants'
 import { RunnerScene } from './game/RunnerScene'
 import { useRunnerGame } from './game/useRunnerGame'
 
 function App() {
   const {
     game,
+    finishSteering,
     levels,
     moveLeft,
     moveRight,
     restartLevel,
     returnToMenu,
     selectLevel,
+    steerToRatio,
     startNextLevel,
     startSelectedLevel,
     step,
   } = useRunnerGame()
-
-  const touchStartX = useRef<number | null>(null)
   const handleExit = useCallback(() => {
     if (typeof window === 'undefined') {
       return
@@ -88,37 +88,12 @@ function App() {
     startSelectedLevel,
   ])
 
-  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (game.status !== 'playing') {
-      return
-    }
-
-    touchStartX.current = event.changedTouches[0]?.clientX ?? null
-  }
-
-  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (game.status !== 'playing' || touchStartX.current === null) {
-      return
-    }
-
-    const endX = event.changedTouches[0]?.clientX ?? touchStartX.current
-    const deltaX = endX - touchStartX.current
-
-    if (Math.abs(deltaX) >= SWIPE_THRESHOLD) {
-      if (deltaX > 0) {
-        moveRight()
-      } else {
-        moveLeft()
-      }
-    }
-
-    touchStartX.current = null
-  }
-
   const hasNextLevel = game.levelIndex < levels.length - 1
+  const steeringRatio =
+    (LANE_POSITIONS[0] - game.playerTargetX) / (LANE_POSITIONS[0] - LANE_POSITIONS[2])
 
   return (
-    <div className="app-shell" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+    <div className="app-shell">
       <div className="app-shell__scene">
         <RunnerScene game={game} onStep={step} />
       </div>
@@ -140,10 +115,11 @@ function App() {
           progress={game.progress}
           score={game.score}
           units={game.units}
-          onMoveLeft={moveLeft}
-          onMoveRight={moveRight}
           onRestart={restartLevel}
           onReturnToMenu={returnToMenu}
+          onSteer={steerToRatio}
+          onSteerEnd={finishSteering}
+          steeringRatio={steeringRatio}
         />
       )}
 

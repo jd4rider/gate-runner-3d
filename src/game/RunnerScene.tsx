@@ -5,7 +5,6 @@ import {
   CAMERA_DISTANCE,
   CAMERA_HEIGHT,
   CAMERA_LOOK_AHEAD,
-  LANE_POSITIONS,
 } from './constants'
 import type { GameSnapshot } from './types'
 import { FinishLine } from './components/FinishLine'
@@ -28,10 +27,10 @@ function SceneContents({ game, onStep }: RunnerSceneProps) {
   useFrame((_, delta) => {
     onStep(delta)
 
-    const laneX = LANE_POSITIONS[game.playerLane]
+    const playerX = game.playerX
 
-    desiredCameraPosition.current.set(laneX * 0.2, CAMERA_HEIGHT, game.playerZ - CAMERA_DISTANCE)
-    desiredLookTarget.current.set(laneX * 0.1, 1.5, game.playerZ + CAMERA_LOOK_AHEAD)
+    desiredCameraPosition.current.set(playerX * 0.2, CAMERA_HEIGHT, game.playerZ - CAMERA_DISTANCE)
+    desiredLookTarget.current.set(playerX * 0.1, 1.5, game.playerZ + CAMERA_LOOK_AHEAD)
 
     const damping = 1 - Math.exp(-delta * 4.5)
     camera.position.lerp(desiredCameraPosition.current, damping)
@@ -54,7 +53,7 @@ function SceneContents({ game, onStep }: RunnerSceneProps) {
       />
 
       <Track length={game.level.length} />
-      <Player targetX={LANE_POSITIONS[game.playerLane]} units={game.units} z={game.playerZ} />
+      <Player x={game.playerX} units={game.units} z={game.playerZ} />
 
       {game.level.gates.map((gate) => (
         <Gate

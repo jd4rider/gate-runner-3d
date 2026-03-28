@@ -45,6 +45,8 @@ export interface GameSnapshot {
   level: LevelDefinition
   levelIndex: number
   playerLane: LaneIndex
+  playerTargetX: number
+  playerX: number
   playerZ: number
   progress: number
   score: number

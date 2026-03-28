@@ -1,3 +1,5 @@
+import { useRef } from 'react'
+
 interface HUDProps {
   bestScore: number
   difficulty: string
@@ -5,10 +7,11 @@ interface HUDProps {
   progress: number
   score: number
   units: number
-  onMoveLeft: () => void
-  onMoveRight: () => void
   onRestart: () => void
   onReturnToMenu: () => void
+  onSteer: (ratio: number) => void
+  onSteerEnd: () => void
+  steeringRatio: number
 }
 
 export function HUD({
@@ -18,12 +21,44 @@ export function HUD({
   progress,
   score,
   units,
-  onMoveLeft,
-  onMoveRight,
   onRestart,
   onReturnToMenu,
+  onSteer,
+  onSteerEnd,
+  steeringRatio,
 }: HUDProps) {
   const progressPercent = Math.round(progress * 100)
+  const activePointerId = useRef<number | null>(null)
+
+  const updateSteering = (event: React.PointerEvent<HTMLDivElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect()
+    const ratio = (event.clientX - bounds.left) / bounds.width
+    onSteer(ratio)
+  }
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    activePointerId.current = event.pointerId
+    event.currentTarget.setPointerCapture(event.pointerId)
+    updateSteering(event)
+  }
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (activePointerId.current !== event.pointerId) {
+      return
+    }
+
+    updateSteering(event)
+  }
+
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (activePointerId.current !== event.pointerId) {
+      return
+    }
+
+    activePointerId.current = null
+    event.currentTarget.releasePointerCapture(event.pointerId)
+    onSteerEnd()
+  }
 
   return (
     <div className="hud">
@@ -107,22 +142,22 @@ export function HUD({
       </div>
 
       <div className="touch-controls" aria-label="Mobile lane controls">
-        <button
-          className="touch-controls__button touch-controls__button--left"
-          onPointerDown={onMoveLeft}
-          type="button"
+        <div
+          aria-label="Touch steering"
+          className="touch-controls__pad"
+          onPointerCancel={handlePointerUp}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
         >
-          <span>Left</span>
-          <small>Tap left side</small>
-        </button>
-        <button
-          className="touch-controls__button touch-controls__button--right"
-          onPointerDown={onMoveRight}
-          type="button"
-        >
-          <span>Right</span>
-          <small>Tap right side</small>
-        </button>
+          <div className="touch-controls__track">
+            <span className="touch-controls__marker">L</span>
+            <span className="touch-controls__marker">M</span>
+            <span className="touch-controls__marker">R</span>
+            <span className="touch-controls__thumb" style={{ left: `${steeringRatio * 100}%` }} />
+          </div>
+          <p className="touch-controls__caption">Drag to steer smoothly</p>
+        </div>
       </div>
     </div>
   )

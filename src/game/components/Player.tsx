@@ -1,14 +1,14 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
-import { Group, MathUtils } from 'three'
+import { Group } from 'three'
 
 interface PlayerProps {
-  targetX: number
+  x: number
   units: number
   z: number
 }
 
-export function Player({ targetX, units, z }: PlayerProps) {
+export function Player({ x, units, z }: PlayerProps) {
   const groupRef = useRef<Group>(null)
   const orbitRef = useRef<Group>(null)
 
@@ -17,7 +17,7 @@ export function Player({ targetX, units, z }: PlayerProps) {
       return
     }
 
-    groupRef.current.position.x = MathUtils.damp(groupRef.current.position.x, targetX, 10, delta)
+    groupRef.current.position.x = x
     groupRef.current.position.z = z
     groupRef.current.position.y = 0.95 + Math.sin(state.clock.elapsedTime * 5) * 0.05
 
@@ -28,7 +28,7 @@ export function Player({ targetX, units, z }: PlayerProps) {
   const satelliteCount = Math.min(Math.max(units - 1, 0), 8)
 
   return (
-    <group ref={groupRef} position={[targetX, 0.95, z]}>
+    <group ref={groupRef} position={[x, 0.95, z]}>
       <mesh castShadow receiveShadow position={[0, -0.5, 0]}>
         <cylinderGeometry args={[1.18, 1.5, 0.34, 8]} />
         <meshStandardMaterial color="#355d79" />

@@ -118,7 +118,7 @@ export function StartScreen({
           </button>
         </div>
 
-        <p className="mobile-start-hint">Once the run starts, swipe or tap the bottom left and right zones.</p>
+        <p className="mobile-start-hint">Once the run starts, drag across the bottom steering bar.</p>
       </div>
     </div>
   )

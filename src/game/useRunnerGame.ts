@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { BEST_SCORE_STORAGE_KEY, LEVELS, STARTING_UNITS } from './constants'
+import { BEST_SCORE_STORAGE_KEY, LANE_POSITIONS, LEVELS, STARTING_UNITS } from './constants'
 import type {
   GameSnapshot,
   GateDefinition,
@@ -9,6 +9,34 @@ import type {
 } from './types'
 
 const clampLane = (lane: number) => Math.max(0, Math.min(2, lane)) as LaneIndex
+const laneMinX = Math.min(...LANE_POSITIONS)
+const laneMaxX = Math.max(...LANE_POSITIONS)
+
+const dampValue = (current: number, target: number, smoothing: number, delta: number) =>
+  current + (target - current) * (1 - Math.exp(-smoothing * delta))
+
+const clampPlayerX = (playerX: number) => Math.max(laneMinX, Math.min(laneMaxX, playerX))
+
+const getNearestLane = (playerX: number): LaneIndex => {
+  let closestLane: LaneIndex = 0
+  let closestDistance = Number.POSITIVE_INFINITY
+
+  LANE_POSITIONS.forEach((laneX, index) => {
+    const distance = Math.abs(playerX - laneX)
+
+    if (distance < closestDistance) {
+      closestDistance = distance
+      closestLane = index as LaneIndex
+    }
+  })
+
+  return closestLane
+}
+
+const getTargetXFromRatio = (ratio: number) => {
+  const clampedRatio = Math.max(0, Math.min(1, ratio))
+  return LANE_POSITIONS[0] + (LANE_POSITIONS[2] - LANE_POSITIONS[0]) * clampedRatio
+}
 
 const readBestScore = () => {
   if (typeof window === 'undefined') {
@@ -53,6 +81,8 @@ const createSnapshot = (
     level,
     levelIndex,
     playerLane: 1,
+    playerTargetX: LANE_POSITIONS[1],
+    playerX: LANE_POSITIONS[1],
     playerZ: 0,
     progress: 0,
     score: 0,
@@ -101,7 +131,7 @@ export const useRunnerGame = () => {
       current.status === 'playing'
         ? {
             ...current,
-            playerLane: clampLane(current.playerLane - 1),
+            playerTargetX: LANE_POSITIONS[clampLane(getNearestLane(current.playerTargetX) - 1)],
           }
         : current,
     )
@@ -112,7 +142,29 @@ export const useRunnerGame = () => {
       current.status === 'playing'
         ? {
             ...current,
-            playerLane: clampLane(current.playerLane + 1),
+            playerTargetX: LANE_POSITIONS[clampLane(getNearestLane(current.playerTargetX) + 1)],
+          }
+        : current,
+    )
+  }, [])
+
+  const steerToRatio = useCallback((ratio: number) => {
+    setGame((current) =>
+      current.status === 'playing'
+        ? {
+            ...current,
+            playerTargetX: clampPlayerX(getTargetXFromRatio(ratio)),
+          }
+        : current,
+    )
+  }, [])
+
+  const finishSteering = useCallback(() => {
+    setGame((current) =>
+      current.status === 'playing'
+        ? {
+            ...current,
+            playerTargetX: LANE_POSITIONS[getNearestLane(current.playerTargetX)],
           }
         : current,
     )
@@ -128,13 +180,15 @@ export const useRunnerGame = () => {
 
       const previousZ = current.playerZ
       const nextZ = Math.min(current.playerZ + current.level.speed * safeDelta, current.level.length)
+      const nextPlayerX = dampValue(current.playerX, current.playerTargetX, 12, safeDelta)
+      const currentLane = getNearestLane(nextPlayerX)
       const appliedGateIds = new Set(current.appliedGateIds)
       const hitHazardIds = new Set(current.hitHazardIds)
       let nextUnits = current.units
 
       for (const gate of current.level.gates) {
         const crossedGate = previousZ < gate.z && nextZ >= gate.z
-        const inSameLane = current.playerLane === gate.lane
+        const inSameLane = currentLane === gate.lane
 
         if (!appliedGateIds.has(gate.id) && crossedGate && inSameLane) {
           nextUnits = applyGateOperation(nextUnits, gate)
@@ -144,7 +198,7 @@ export const useRunnerGame = () => {
 
       for (const hazard of current.level.hazards) {
         const crossedHazard = previousZ < hazard.z && nextZ >= hazard.z
-        const inSameLane = current.playerLane === hazard.lane
+        const inSameLane = currentLane === hazard.lane
 
         if (!hitHazardIds.has(hazard.id) && crossedHazard && inSameLane) {
           nextUnits = applyHazard(nextUnits, hazard)
@@ -173,6 +227,8 @@ export const useRunnerGame = () => {
         appliedGateIds,
         bestScore: nextBestScore,
         hitHazardIds,
+        playerLane: currentLane,
+        playerX: nextPlayerX,
         playerZ: nextZ,
         progress: nextZ / current.level.length,
         score: nextScore,
@@ -184,12 +240,14 @@ export const useRunnerGame = () => {
 
   return {
     game,
+    finishSteering,
     levels: LEVELS,
     moveLeft,
     moveRight,
     restartLevel,
     returnToMenu,
     selectLevel,
+    steerToRatio,
     startNextLevel,
     startSelectedLevel,
     step,
